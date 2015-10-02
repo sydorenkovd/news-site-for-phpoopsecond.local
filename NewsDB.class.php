@@ -1,9 +1,10 @@
 <?php
 include "INewsDB.class.php";
 include 'FetchIterator.class.php';
-class NewsDB implements INewsDB{
+class NewsDB implements INewsDB, IteratorAggregate{
 	const DB_NAME = 'news.db';
 	protected $_db;
+	protected $_items = [];
 	function __construct(){
 		if(is_file(self::DB_NAME)){
 			$this->_db = new SQLite3(self::DB_NAME);
@@ -28,6 +29,17 @@ class NewsDB implements INewsDB{
 						UNION SELECT 2 as id, 'Культура' as name
 						UNION SELECT 3 as id, 'Спорт' as name";
 			$this->_db->exec($sql) or $this->_db->lastErrorMsg();	
+		}
+		$this->getCategory();
+	}
+	function getIterator(){
+		return new ArrayIterator($this->_items);
+	}
+	protected function getCategory(){
+		$sql = "SELECT id, name FROM category";
+		$result = $this->_db->query($sql);
+		while($r = $result->fetchArray(SQLITE3_ASSOC)){
+		$this->_items[$r['id']] = $r['name'];
 		}
 	}
 	function __destruct(){
