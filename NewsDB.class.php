@@ -1,5 +1,6 @@
 <?php
 include "INewsDB.class.php";
+include 'FetchIterator.class.php';
 class NewsDB implements INewsDB{
 	const DB_NAME = 'news.db';
 	protected $_db;
@@ -43,7 +44,7 @@ class NewsDB implements INewsDB{
 	}	
 	protected function db2Arr($data){
 		$arr = array();
-		while($row = $data->fetchAll(SQLITE3_ASSOC))
+		while($row = $data->fetchArray(SQLITE3_ASSOC))
 			$arr[] = $row;
 		return $arr;	
 	}
@@ -56,7 +57,11 @@ class NewsDB implements INewsDB{
 			$result = $this->_db->query($sql);
 			if (!is_object($result)) 
 				throw new Exception($this->_db->lastErrorMsg());
-			return $this->db2Arr($result);
+			// return $this->db2Arr($result);
+			$fetchFunction = function() use ($result){
+				return $result->fetchArray(SQLITE3_ASSOC);
+			};
+			return new FetchIterator($fetchFunction);
 		}catch(Exception $e){
 			return false;
 		}
