@@ -1,7 +1,7 @@
 # news-site-for-phpoopsecond.local
 Spec4
 Структура приложения "Лента новостей"
-news.php
+news.php.\n
 основной файл новостной ленты
 INewsDB.class.php
 ○ интерфейс INewsDB с декларациями методов
